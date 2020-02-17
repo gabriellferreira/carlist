@@ -1,5 +1,6 @@
 package br.com.gabriellferreira.carlist.presentation.view.activity
 
+import android.Manifest
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -16,6 +17,7 @@ import br.com.gabriellferreira.carlist.presentation.util.extension.show
 import br.com.gabriellferreira.carlist.presentation.util.extension.showRetrySnackbar
 import br.com.gabriellferreira.carlist.presentation.view.adapter.PlacemarkListAdapter
 import br.com.gabriellferreira.carlist.presentation.view.viewmodel.PlacemarkListViewModel
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -24,8 +26,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterManager
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_placemark_list.*
+import permissions.dispatcher.NeedsPermission
+import permissions.dispatcher.OnPermissionDenied
+import permissions.dispatcher.RuntimePermissions
 import javax.inject.Inject
 
+@RuntimePermissions
 class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @Inject
@@ -38,12 +44,13 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
             .newControllerComponent(ControllerModule(this))
     }
     private var clicksDisposable: Disposable? = null
-    private lateinit var mMap: GoogleMap
+    private var mMap: GoogleMap? = null
     private val clusterManager by lazy { ClusterManager<Placemark>(this, mMap) }
 
     companion object {
         const val HAMBURG_LATITUDE = 53.5586941
         const val HAMBURG_LONGITUDE = 9.78774
+        const val DEFAULT_ZOOM_LEVEL: Float = 15f
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +75,6 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
             Observer<List<Placemark>> { items ->
                 adapter.submitList(items)
                 clusterManager.addItems(items)
-                centerCameraHamburg()
             })
         viewModel.networkState.observe(this,
             Observer<NetworkState> {
@@ -102,11 +108,6 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
             })
     }
 
-    private fun centerCameraHamburg() {
-        val hamburg = LatLng(HAMBURG_LATITUDE, HAMBURG_LONGITUDE)
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(hamburg, 8f))
-    }
-
     private fun showRetrySnackbar(retryable: Retryable?) {
         retryable?.let {
             showRetrySnackbar(placemark_list_parent, getString(R.string.generic_retry), retryable)
@@ -119,8 +120,45 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
+        if (mMap != null) return
         mMap = googleMap
-        mMap.setOnCameraIdleListener(clusterManager)
-        mMap.setOnMarkerClickListener(clusterManager)
+        mMap?.setOnCameraIdleListener(clusterManager)
+        mMap?.setOnMarkerClickListener(clusterManager)
+        showUserPositionWithPermissionCheck()
+    }
+
+    @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    fun showUserPosition() {
+        mMap?.isMyLocationEnabled = true
+        mMap?.setOnMyLocationButtonClickListener {
+            animateToUserPosition()
+            true
+        }
+        animateToUserPosition()
+    }
+
+    private fun animateToUserPosition() {
+        val mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        mFusedLocationProviderClient.lastLocation.addOnCompleteListener {
+            it.result?.let { location ->
+                val latLng = LatLng(location.latitude, location.longitude)
+                mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM_LEVEL))
+            }
+        }
+    }
+
+    @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
+    fun centerCameraHamburg() {
+        val hamburg = LatLng(HAMBURG_LATITUDE, HAMBURG_LONGITUDE)
+        mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(hamburg, DEFAULT_ZOOM_LEVEL))
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        onRequestPermissionsResult(requestCode, grantResults)
     }
 }
