@@ -4,32 +4,12 @@
     android:id="@+id/navi_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:openDrawer="end">
 
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="200dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/placemark_list_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:overScrollMode="never"
-            android:scrollbars="none"
-            tools:listitem="@layout/item_placemark"
-            android:visibility="visible" />
-
-    </com.google.android.material.navigation.NavigationView>
-
     <RelativeLayout
+        android:id="@+id/placemark_list_parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/placemark_list_parent">
+        android:layout_height="match_parent">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/placemark_list_map"
@@ -43,19 +23,37 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:indeterminate="true"/>
+            android:indeterminate="true" />
 
         <TextView
             android:id="@+id/placemark_list_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/placemark_list_error_msg"
-            android:paddingBottom="200dp"
-            android:textSize="20sp"
             android:layout_centerInParent="true"
-            android:visibility="gone"/>
+            android:paddingBottom="200dp"
+            android:text="@string/placemark_list_error_msg"
+            android:textSize="20sp"
+            android:visibility="gone" />
 
     </RelativeLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/placemark_list_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            android:visibility="visible"
+            tools:listitem="@layout/item_placemark" />
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
 
