@@ -46,6 +46,7 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
     private var clicksDisposable: Disposable? = null
     private var mMap: GoogleMap? = null
     private val clusterManager by lazy { ClusterManager<Placemark>(this, mMap) }
+    private var isItemListHidden = false
 
     companion object {
         const val HAMBURG_LATITUDE = 53.5586941
@@ -124,6 +125,24 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
         mMap?.setOnCameraIdleListener(clusterManager)
         mMap?.setOnMarkerClickListener(clusterManager)
+        clusterManager.setOnClusterItemClickListener { placemark ->
+            if (isItemListHidden) {
+                clusterManager.markerCollection.showAll()
+            } else {
+                clusterManager.markerCollection.hideAll()
+                clusterManager.markerCollection.markers.first {
+                    it.title == placemark.title
+                }.isVisible = true
+            }
+            isItemListHidden = !isItemListHidden
+            false
+        }
+        mMap?.setOnMapClickListener {
+            if (isItemListHidden) {
+                clusterManager.markerCollection.showAll()
+                isItemListHidden = !isItemListHidden
+            }
+        }
         showUserPositionWithPermissionCheck()
     }
 
