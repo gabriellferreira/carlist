@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/lightgray</color>
+    <color name="colorPrimaryDark">@color/gray</color>
+    <color name="colorAccent">@color/dimgray</color>
+
+    <color name="gray">#808080</color>
+    <color name="dimgray">#696969</color>
+    <color name="lightgray">#D3D3D3</color>
+</resources>
