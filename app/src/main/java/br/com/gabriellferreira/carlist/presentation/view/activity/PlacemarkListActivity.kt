@@ -22,6 +22,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.clustering.ClusterManager
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_placemark_list.*
 import javax.inject.Inject
@@ -39,6 +40,7 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
     }
     private var clicksDisposable: Disposable? = null
     private lateinit var mMap: GoogleMap
+    private val clusterManager by lazy { ClusterManager<Placemark>(this, mMap) }
 
     companion object {
         const val HAMBURG_LATITUDE = 53.5586941
@@ -63,10 +65,11 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun initObservers() {
-        viewModel.itemPagedList.observe(this,
+        viewModel.itemList.observe(this,
             Observer<List<Placemark>> { items ->
                 adapter.submitList(items)
-                items.forEach(this::addPointToMap)
+                clusterManager.addItems(items)
+                centerCameraHamburg()
             })
         viewModel.networkState.observe(this,
             Observer<NetworkState> {
@@ -100,9 +103,9 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
             })
     }
 
-    private fun addPointToMap(item: Placemark) {
-        val latlng = LatLng(item.coordinates.second, item.coordinates.first)
-        mMap.addMarker(MarkerOptions().position(latlng).title(item.name))
+    private fun centerCameraHamburg() {
+        val hamburg = LatLng(HAMBURG_LATITUDE, HAMBURG_LONGITUDE)
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(hamburg, 8f))
     }
 
     private fun showRetrySnackbar(retryable: Retryable?) {
@@ -116,12 +119,9 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
         placemark_list_recycler?.adapter = adapter
     }
 
-
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-        // Add a marker in Sydney and move the camera
-        val hamburg = LatLng(HAMBURG_LATITUDE, HAMBURG_LONGITUDE)
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(hamburg, 8f))
+        mMap.setOnCameraIdleListener(clusterManager)
+        mMap.setOnMarkerClickListener(clusterManager)
     }
 }
