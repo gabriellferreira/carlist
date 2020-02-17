@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package br.com.gabriellferreira.carlist.data.mapper
 
 import br.com.gabriellferreira.carlist.data.model.PlacemarkData
@@ -18,6 +20,9 @@ class PlacemarkMapper @Inject constructor() {
             data.coordinates?.get(0) ?: 0.0,
             data.coordinates?.get(1) ?: 0.0,
             data.coordinates?.get(2) ?: 0.0
-        )
+        ),
+        address = data.address ?: "",
+        fuel = "${data.fuel ?: 0.0}%",
+        name = data.name ?: ""
     )
 }

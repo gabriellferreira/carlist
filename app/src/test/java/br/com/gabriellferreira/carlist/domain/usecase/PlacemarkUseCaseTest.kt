@@ -39,7 +39,10 @@ class PlacemarkUseCaseTest {
                     listOf(
                         Placemark(
                             engineType = "abcd",
-                            coordinates = Triple(0.0, 0.0, 0.0)
+                            coordinates = Triple(0.0, 0.0, 0.0),
+                            address = data.address ?: "",
+                            fuel = data.fuel ?: -1,
+                            name = data.name ?: ""
                         )
                     )
                 )

@@ -17,10 +17,30 @@ android {
 
     flavorDimensions "environment"
 
+    signingConfigs {
+        deploy {
+            storeFile file('../key.keystore')
+            keyAlias KEYSTORE_ALIAS
+            storePassword KEYSTORE_STORE_PASSWORD
+            keyPassword KEYSTORE_PASSWORD
+        }
+    }
+
     productFlavors {
         production { flavor ->
             dimension "environment"
             flavor.buildConfigField("String", "M_TRIBES_BASE_URL", "\"https://data.m-tribes.com/\"")
+        }
+    }
+
+    buildTypes {
+        debug {
+            buildType ->
+                signingConfig signingConfigs.deploy
+        }
+        release {
+            buildType ->
+                signingConfig signingConfigs.deploy
         }
     }
 }
@@ -41,6 +61,7 @@ dependencies {
     // Dagger
     def dagger2Version = "2.25.2"
     implementation "com.google.dagger:dagger:$dagger2Version"
+    implementation 'com.google.android.gms:play-services-maps:16.1.0'
     kapt "com.google.dagger:dagger-compiler:$dagger2Version"
     kaptTest "com.google.dagger:dagger-compiler:$dagger2Version"
 

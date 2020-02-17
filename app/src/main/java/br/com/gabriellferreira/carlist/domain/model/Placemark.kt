@@ -4,7 +4,10 @@ import androidx.recyclerview.widget.DiffUtil
 
 class Placemark(
     val engineType: String,
-    val coordinates: Triple<Double, Double, Double>
+    val coordinates: Triple<Double, Double, Double>,
+    val address: String,
+    val fuel: String,
+    val name: String
 )
 
 class PlacemarkDiffUtil : DiffUtil.ItemCallback<Placemark>() {
