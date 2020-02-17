@@ -76,6 +76,7 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
             Observer<List<Placemark>> { items ->
                 adapter.submitList(items)
                 clusterManager.addItems(items)
+                clusterManager.cluster()
             })
         viewModel.networkState.observe(this,
             Observer<NetworkState> {
