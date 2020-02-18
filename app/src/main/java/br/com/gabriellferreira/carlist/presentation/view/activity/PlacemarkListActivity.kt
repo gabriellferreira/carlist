@@ -171,9 +171,9 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
             clusterManager.markerCollection.showAll()
         } else {
             clusterManager.markerCollection.hideAll()
-            clusterManager.markerCollection.markers.first {
+            clusterManager.markerCollection.markers.firstOrNull {
                 it.title == placemark.title
-            }.isVisible = true
+            }?.isVisible = true
         }
         isItemListHidden = !isItemListHidden
     }
