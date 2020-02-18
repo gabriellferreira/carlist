@@ -139,7 +139,7 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
                     onPlacemarkListItemClick(placemark)
                     marker?.showInfoWindow()
                     animateToPosition(placemark.latitude, placemark.longitude)
-                    navi_view?.closeDrawers()
+                    placemark_view?.closeDrawers()
                 }
 
                 override fun onError(e: Throwable) {
