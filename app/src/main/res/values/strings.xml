@@ -5,4 +5,5 @@
     <string name="generic_retry">Do you want to try again?</string>
     <string name="generic_open_without_internet">It\'s not possible to open without internet</string>
     <string name="title_activity_maps">Map</string>
+    <string name="placemark_list">Placemark List</string>
 </resources>

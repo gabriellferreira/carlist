@@ -3,12 +3,14 @@ package br.com.gabriellferreira.carlist.presentation.view.activity
 import android.Manifest
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.gabriellferreira.carlist.R
 import br.com.gabriellferreira.carlist.domain.model.NetworkState
-import br.com.gabriellferreira.carlist.domain.model.NetworkState.State.*
 import br.com.gabriellferreira.carlist.domain.model.Placemark
 import br.com.gabriellferreira.carlist.domain.model.Retryable
 import br.com.gabriellferreira.carlist.presentation.di.AppApplication
@@ -31,6 +33,7 @@ import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.OnPermissionDenied
 import permissions.dispatcher.RuntimePermissions
 import javax.inject.Inject
+
 
 @RuntimePermissions
 class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -61,7 +64,10 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
         mControllerComponent.inject(this)
         setupRecycler()
         initObservers()
+        initMapFragment()
+    }
 
+    private fun initMapFragment() {
         val mapFragment =
             supportFragmentManager.findFragmentById(R.id.placemark_list_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -72,30 +78,42 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onDestroy()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_placemark_list, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_placemark_list -> {
+                placemark_view?.openDrawer(GravityCompat.END)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun initObservers() {
         viewModel.itemList.observe(this,
-            Observer<List<Placemark>> { items ->
-                adapter.submitList(items)
-                clusterManager.addItems(items)
-                clusterManager.cluster()
-            })
-        viewModel.networkState.observe(this,
-            Observer<NetworkState> {
+            Observer<NetworkState<List<Placemark>>> {
                 placemark_list_error?.setOnClickListener(null)
-                when (it.state) {
-                    LOADED -> {
+                when (it) {
+                    is NetworkState.Loaded<List<Placemark>> -> {
                         placemark_list_map?.show()
                         placemark_list_error?.hide()
                         placemark_list_progress?.hide()
+
+                        adapter.submitList(it.result)
+                        clusterManager.addItems(it.result)
+                        clusterManager.cluster()
                     }
-                    IN_PROGRESS -> {
+                    is NetworkState.InProgress -> {
                         if (adapter.itemCount == 0) {
                             placemark_list_map?.show()
                             placemark_list_error?.hide()
                             placemark_list_progress?.hide()
                         }
                     }
-                    ERROR -> {
+                    is NetworkState.Error -> {
                         if (adapter.itemCount > 0) {
                             placemark_list_progress?.hide()
                             placemark_list_error?.hide()
@@ -120,32 +138,22 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun setupRecycler() {
         placemark_list_recycler?.layoutManager = LinearLayoutManager(this)
         placemark_list_recycler?.adapter = adapter
-        adapter.onItemClickSubject
-            .subscribe(object : io.reactivex.Observer<Placemark> {
-                override fun onComplete() {
-//                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        clicksDisposable = adapter.onItemClickSubject
+            .doOnError { e ->
+                Log.e("PlacemarkListActivity", "setupRecycler", e)
+            }
+            .doOnNext { placemark ->
+                clusterManager.markerCollection.showAll()
+                isItemListHidden = false
+                val marker = clusterManager.markerCollection.markers.firstOrNull {
+                    it.title == placemark.name
                 }
-
-                override fun onSubscribe(d: Disposable) {
-                    clicksDisposable = d
-                }
-
-                override fun onNext(placemark: Placemark) {
-                    clusterManager.markerCollection.showAll()
-                    isItemListHidden = false
-                    val marker = clusterManager.markerCollection.markers.firstOrNull {
-                        it.title == placemark.name
-                    }
-                    onPlacemarkListItemClick(placemark)
-                    marker?.showInfoWindow()
-                    animateToPosition(placemark.latitude, placemark.longitude)
-                    placemark_view?.closeDrawers()
-                }
-
-                override fun onError(e: Throwable) {
-                    Log.e("PlacemarkListActivity", "setupRecycler", e)
-                }
-            })
+                onPlacemarkListItemClick(placemark)
+                marker?.showInfoWindow()
+                animateToPosition(placemark.latitude, placemark.longitude)
+                placemark_view?.closeDrawers()
+            }
+            .subscribe()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
