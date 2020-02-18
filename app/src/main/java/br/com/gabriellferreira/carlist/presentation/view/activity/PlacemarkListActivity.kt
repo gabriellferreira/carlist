@@ -128,10 +128,18 @@ class PlacemarkListActivity : BaseMapActivity() {
     override fun onMapReady(googleMap: GoogleMap) {
         super.onMapReady(googleMap)
         map?.setOnMapClickListener {
-            if (isItemListHidden) {
-                clusterManager.markerCollection.showAll()
-                isItemListHidden = !isItemListHidden
-            }
+            showAllMarkers()
+        }
+    }
+
+    override fun onMyLocationButtonClickListener() {
+        showAllMarkers()
+    }
+
+    private fun showAllMarkers() {
+        if (isItemListHidden) {
+            clusterManager.markerCollection.showAll()
+            isItemListHidden = !isItemListHidden
         }
     }
 

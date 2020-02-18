@@ -43,10 +43,13 @@ abstract class BaseMapActivity : AppCompatActivity(), OnMapReadyCallback{
         map?.isMyLocationEnabled = true
         map?.setOnMyLocationButtonClickListener {
             animateToUserPosition()
+            onMyLocationButtonClickListener()
             true
         }
         animateToUserPosition()
     }
+
+    abstract fun onMyLocationButtonClickListener()
 
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     internal fun centerCameraDefaultLocation(){
