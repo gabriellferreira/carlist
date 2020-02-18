@@ -9,7 +9,6 @@ import br.com.gabriellferreira.carlist.domain.model.Retryable
 import br.com.gabriellferreira.carlist.domain.usecase.PlacemarkUseCase
 import io.reactivex.Scheduler
 import io.reactivex.observers.DisposableSingleObserver
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 open class PlacemarkListViewModel @Inject constructor(

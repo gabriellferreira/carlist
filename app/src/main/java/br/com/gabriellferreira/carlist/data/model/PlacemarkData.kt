@@ -8,9 +8,6 @@ class PlacemarkData(
     val address: String? = null,
     val coordinates: List<Double>? = null,
     val engineType: String? = null,
-    val exterior: String? = null,
     val fuel: Int? = null,
-    val interior: String? = null,
-    val name: String? = null,
-    val vin: String? = null
+    val name: String? = null
 )

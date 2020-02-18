@@ -1,10 +1,7 @@
 <resources>
     <string name="app_name">PlacemarkList</string>
-    <string name="accessibility_image_load_failed">Image was not loaded properly</string>
     <string name="placemark_list_error_msg">Ops, something went wrong! :/</string>
     <string name="generic_retry">Do you want to try again?</string>
-    <string name="generic_open_without_internet">It\'s not possible to open without internet</string>
-    <string name="title_activity_maps">Map</string>
     <string name="placemark_list">Placemark List</string>
     <string name="fuel_level_description">Fuel: %1$d%%</string>
 </resources>

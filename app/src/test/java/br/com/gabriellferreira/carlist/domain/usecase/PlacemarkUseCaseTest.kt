@@ -17,6 +17,7 @@ class PlacemarkUseCaseTest {
     @Mock
     lateinit var repository: PlacemarkRepository
 
+    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var useCase: PlacemarkUseCase
 
     @Before

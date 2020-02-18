@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package br.com.gabriellferreira.carlist.presentation.util.extension
 
 import android.view.View
