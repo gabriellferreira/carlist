@@ -8,6 +8,7 @@ import dagger.MapKey
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
+import io.reactivex.Scheduler
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
@@ -17,8 +18,8 @@ class ViewModelModule {
     @Provides
     @IntoMap
     @ViewModelKey(PlacemarkListViewModel::class)
-    fun getPlacemarkListViewModel(useCase: PlacemarkUseCase): ViewModel {
-        return PlacemarkListViewModel(useCase)
+    fun getPlacemarkListViewModel(useCase: PlacemarkUseCase, scheduler: Scheduler): ViewModel {
+        return PlacemarkListViewModel(useCase, scheduler)
     }
 
     @Provides
