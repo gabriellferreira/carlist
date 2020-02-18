@@ -2,6 +2,7 @@ package br.com.gabriellferreira.carlist.presentation.view.activity
 
 import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -119,6 +120,32 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun setupRecycler() {
         placemark_list_recycler?.layoutManager = LinearLayoutManager(this)
         placemark_list_recycler?.adapter = adapter
+        adapter.onItemClickSubject
+            .subscribe(object : io.reactivex.Observer<Placemark> {
+                override fun onComplete() {
+//                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    clicksDisposable = d
+                }
+
+                override fun onNext(placemark: Placemark) {
+                    clusterManager.markerCollection.showAll()
+                    isItemListHidden = false
+                    val marker = clusterManager.markerCollection.markers.firstOrNull {
+                        it.title == placemark.name
+                    }
+                    onPlacemarkListItemClick(placemark)
+                    marker?.showInfoWindow()
+                    animateToPosition(placemark.latitude, placemark.longitude)
+                    navi_view?.closeDrawers()
+                }
+
+                override fun onError(e: Throwable) {
+                    Log.e("PlacemarkListActivity", "setupRecycler", e)
+                }
+            })
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -127,15 +154,7 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap?.setOnCameraIdleListener(clusterManager)
         mMap?.setOnMarkerClickListener(clusterManager)
         clusterManager.setOnClusterItemClickListener { placemark ->
-            if (isItemListHidden) {
-                clusterManager.markerCollection.showAll()
-            } else {
-                clusterManager.markerCollection.hideAll()
-                clusterManager.markerCollection.markers.first {
-                    it.title == placemark.title
-                }.isVisible = true
-            }
-            isItemListHidden = !isItemListHidden
+            onPlacemarkListItemClick(placemark)
             false
         }
         mMap?.setOnMapClickListener {
@@ -145,6 +164,18 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         showUserPositionWithPermissionCheck()
+    }
+
+    private fun onPlacemarkListItemClick(placemark: Placemark) {
+        if (isItemListHidden) {
+            clusterManager.markerCollection.showAll()
+        } else {
+            clusterManager.markerCollection.hideAll()
+            clusterManager.markerCollection.markers.first {
+                it.title == placemark.title
+            }.isVisible = true
+        }
+        isItemListHidden = !isItemListHidden
     }
 
     @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -161,10 +192,14 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
         val mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         mFusedLocationProviderClient.lastLocation.addOnCompleteListener {
             it.result?.let { location ->
-                val latLng = LatLng(location.latitude, location.longitude)
-                mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM_LEVEL))
+                animateToPosition(location.latitude, location.longitude)
             }
         }
+    }
+
+    private fun animateToPosition(lat: Double, long: Double): Unit? {
+        val latLng = LatLng(lat, long)
+        return mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM_LEVEL))
     }
 
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)

@@ -16,11 +16,8 @@ class PlacemarkMapper @Inject constructor() {
 
     fun map(data: PlacemarkData) = Placemark(
         engineType = data.engineType ?: "",
-        coordinates = Triple(
-            data.coordinates?.get(0) ?: 0.0,
-            data.coordinates?.get(1) ?: 0.0,
-            data.coordinates?.get(2) ?: 0.0
-        ),
+        latitude = data.coordinates?.get(1) ?: 0.0,
+        longitude = data.coordinates?.get(0) ?: 0.0,
         address = data.address ?: "",
         fuel = "${data.fuel ?: 0.0}%",
         name = data.name ?: ""
