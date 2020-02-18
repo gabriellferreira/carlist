@@ -19,11 +19,7 @@ open class PlacemarkListViewModel @Inject constructor(
 
     var itemList: MutableLiveData<NetworkState<List<Placemark>>> = MutableLiveData()
 
-    init {
-        fetchPlacemarkList()
-    }
-
-    private fun fetchPlacemarkList() {
+    fun fetchPlacemarkList() {
         itemList.postValue(NetworkState.InProgress)
         useCase.fetchPlacemarkList()
             .subscribeOn(schedulers)

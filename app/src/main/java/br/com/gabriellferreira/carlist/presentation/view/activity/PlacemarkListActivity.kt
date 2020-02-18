@@ -44,6 +44,7 @@ class PlacemarkListActivity : BaseMapActivity() {
         setupRecycler()
         initObservers()
         initMap()
+        viewModel.fetchPlacemarkList()
     }
 
     override fun initMap() {
