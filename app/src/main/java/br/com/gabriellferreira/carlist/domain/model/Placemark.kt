@@ -6,25 +6,29 @@ import com.google.maps.android.clustering.ClusterItem
 
 class Placemark(
     val engineType: String,
-    val latitude: Double,
-    val longitude: Double,
     val address: String,
-    val fuel: String,
+    val coordinates: Coordinates,
+    val fuelString: String,
     val name: String
 ) : ClusterItem {
 
-    override fun getPosition() = LatLng(latitude, longitude)
+    override fun getPosition() = LatLng(coordinates.latitude, coordinates.longitude)
 
     override fun getTitle(): String = name
 
     override fun getSnippet(): String = address
 }
 
+class Coordinates(
+    val latitude: Double,
+    val longitude: Double
+)
+
 class PlacemarkDiffUtil : DiffUtil.ItemCallback<Placemark>() {
 
     override fun areItemsTheSame(oldItem: Placemark, newItem: Placemark): Boolean {
-        return oldItem.latitude == newItem.latitude &&
-                oldItem.longitude == newItem.longitude
+        return oldItem.coordinates.latitude == newItem.coordinates.latitude &&
+                oldItem.coordinates.longitude == newItem.coordinates.longitude
     }
 
     override fun areContentsTheSame(oldItem: Placemark, newItem: Placemark): Boolean {

@@ -34,7 +34,7 @@ class PlacemarkListAdapter :
                 onItemClickSubject.onNext(model)
             }
             view.item_placemark_name.text = model.name
-            view.item_placemark_fuel_level.text = model.fuel
+            view.item_placemark_fuel_level.text = model.fuelString
         }
     }
 }

@@ -41,7 +41,7 @@ class PlacemarkUseCaseTest {
                             engineType = "abcd",
                             coordinates = Triple(0.0, 0.0, 0.0),
                             address = data.address ?: "",
-                            fuel = data.fuel ?: -1,
+                            fuelString = data.fuel ?: -1,
                             name = data.name ?: ""
                         )
                     )

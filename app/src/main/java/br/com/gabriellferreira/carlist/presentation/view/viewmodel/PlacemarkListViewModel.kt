@@ -2,6 +2,7 @@ package br.com.gabriellferreira.carlist.presentation.view.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import br.com.gabriellferreira.carlist.domain.model.Coordinates
 import br.com.gabriellferreira.carlist.domain.model.NetworkState
 import br.com.gabriellferreira.carlist.domain.model.Placemark
 import br.com.gabriellferreira.carlist.domain.model.Retryable
@@ -38,5 +39,8 @@ open class PlacemarkListViewModel @Inject constructor(
                 }
             })
     }
+
+    fun getDefaultLocation(): Coordinates = useCase.getDefaultLocation()
+    fun getDefaultZoomLevel(): Float = useCase.getDefaultZoomLevel()
 }
 
