@@ -17,30 +17,10 @@ android {
 
     flavorDimensions "environment"
 
-    signingConfigs {
-        deploy {
-            storeFile file('../key.keystore')
-            keyAlias KEYSTORE_ALIAS
-            storePassword KEYSTORE_STORE_PASSWORD
-            keyPassword KEYSTORE_PASSWORD
-        }
-    }
-
     productFlavors {
         production { flavor ->
             dimension "environment"
             flavor.buildConfigField("String", "M_TRIBES_BASE_URL", "\"https://data.m-tribes.com/\"")
-        }
-    }
-
-    buildTypes {
-        debug {
-            buildType ->
-                signingConfig signingConfigs.deploy
-        }
-        release {
-            buildType ->
-                signingConfig signingConfigs.deploy
         }
     }
 }

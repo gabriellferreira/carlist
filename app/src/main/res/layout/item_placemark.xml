@@ -7,16 +7,15 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/item_placemark_fuel_level"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="55%" />
-
-    <TextView
         android:id="@+id/item_placemark_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="Name Name" />
 
+    <TextView
+        android:id="@+id/item_placemark_fuel_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="55%" />
 
 </LinearLayout>
