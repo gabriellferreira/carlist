@@ -50,8 +50,8 @@ class PlacemarkListActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isItemListHidden = false
 
     companion object {
-        const val HAMBURG_LATITUDE = 53.5586941
-        const val HAMBURG_LONGITUDE = 9.78774
+        const val HAMBURG_LATITUDE = 53.552581
+        const val HAMBURG_LONGITUDE = 10.0027537
         const val DEFAULT_ZOOM_LEVEL: Float = 15f
     }
 
