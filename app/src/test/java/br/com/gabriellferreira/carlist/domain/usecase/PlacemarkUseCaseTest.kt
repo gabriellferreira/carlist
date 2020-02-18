@@ -1,5 +1,6 @@
 package br.com.gabriellferreira.carlist.domain.usecase
 
+import br.com.gabriellferreira.carlist.domain.model.Coordinates
 import br.com.gabriellferreira.carlist.domain.model.Placemark
 import br.com.gabriellferreira.carlist.domain.repository.PlacemarkRepository
 import br.com.gabriellferreira.carlist.presentation.di.*
@@ -38,11 +39,11 @@ class PlacemarkUseCaseTest {
                 Single.just(
                     listOf(
                         Placemark(
-                            engineType = "abcd",
-                            coordinates = Triple(0.0, 0.0, 0.0),
-                            address = data.address ?: "",
-                            fuelString = data.fuel ?: -1,
-                            name = data.name ?: ""
+                            engineType = "eletric",
+                            coordinates = Coordinates(0.0, 0.0),
+                            address = "Kieler Strasse",
+                            fuelString = "Fuel: 45%",
+                            name = "EIC-6727"
                         )
                     )
                 )
